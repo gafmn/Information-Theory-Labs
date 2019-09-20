@@ -30,6 +30,38 @@ def recalculate_ranks(part, ranks):
     return ranks
 
 
+def convert_to_bin(start, end):
+    number = ''
+    i = 1
+    counter = 2**(-i)
+    while True:
+        i += 1
+        if counter < start:
+            number += '1'
+            counter += 2**(-i)
+        elif counter > end:
+            number += '0'
+            counter -= 2**(-i)
+        elif counter >= start and counter <= end:
+            number += '1'
+            return number
+
+
+def convert_to_dec(binary):
+    div, mod = binary.split('.')
+    whole = 0
+    fractional = 0
+    for i in range(len(div)):
+        whole = whole + (int)(div[i])*(2**i)
+    for i in range(len(mod)):
+        fractional = fractional + (int)(mod[i])*(2**(-i - 1))
+    return whole + fractional
+
+
+def preprocessing(code):
+    return '0.' + code
+
+
 def encoding(input_list, code):
     temp = []
     temp = deepcopy(input_list)
@@ -41,15 +73,20 @@ def encoding(input_list, code):
     last_ch = code[len(code) - 1]
     for item in temp:
         if last_ch in item:
+            number = convert_to_bin(item[2], item[3])
+            print(number)
             print("The range: (", item[2], ", ", item[3], ")")
+            return number
 
 
 def decoding(input_list, code, n):
     temp = []
     temp = deepcopy(input_list)
     temp = calculate_ranks(temp)
+    code = preprocessing(code)
+    dec = convert_to_dec(code)
     for item in temp:
-        if code < item[3] and code > item[2] and n > 0:
+        if dec < item[3] and dec > item[2] and n > 0:
             temp = recalculate_ranks(item, temp)
             n = n - 1
             print(item[0])
@@ -57,6 +94,5 @@ def decoding(input_list, code, n):
 
 if __name__ == '__main__':
     ch = 'acd'
-    encoding(input_list, ch)
-    code = 0.5395
+    code = encoding(input_list, ch)
     decoding(input_list, code, 3)
